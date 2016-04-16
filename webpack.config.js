@@ -1,9 +1,8 @@
-
-const merge = require('webpack-merge');
-
-const TARGET = process.env.npm_lifecycle_event;
-
 const path = require('path');
+const merge = require('webpack-merge');
+const webpack = require('webpack');
+
+const NpmInstallPlugin = require('npm-install-webpack-plugin');
 
 const PATHS = {
   app: path.join(__dirname, 'app'),
@@ -19,14 +18,28 @@ const common = {
   output: {
     path: PATHS.build,
     filename: 'bundle.js'
+  },
+  module: {
+    loaders: [
+      {
+        // Test expects a RegExp! Note the slashes!
+        test: /\.css$/,
+        loaders: ['style', 'css'],
+        // Include accepts either a path or an array of paths.
+        include: PATHS.app
+      }
+    ]
   }
 };
 
-const webpack = require('webpack');
+const TARGET = process.env.npm_lifecycle_event;
 
 // Default configuration
 if (TARGET === 'start' || !TARGET) {
   module.exports = merge(common, {
+
+    devTool: 'eval-source-map',
+
     devServer: {
       contentBase: PATHS.build,
 
@@ -49,7 +62,10 @@ if (TARGET === 'start' || !TARGET) {
       pot: process.env.PORT
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
+      new NpmInstallPlugin({
+        save: true // --save
+      })
     ]
   });
 }

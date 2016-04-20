@@ -29,7 +29,7 @@ export default class App extends React.Component {
 		
 		return (
 			<div>
-				<button onClick={this.addNote}>+</button>
+				<button className="add-class" onClick={this.addNote}>+</button>
 				<Notes 
 					notes={notes} 
 					onEdit={this.editNote} 
